@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidio Hub — Tazama. Lipa. Furahia.</title>
+<style>
+/* No external font/CSS requests — everything below is system fonts only,
+   so the page has nothing extra to fetch before it can render. */
+:root{
+  --bg-night:#0E1116;
+  --bg-panel:#161B22;
+  --bg-panel-2:#1E2530;
+  --line:#2A323D;
+  --text:#F5F1E8;
+  --text-dim:#9AA3AE;
+  --gold:#F4B740;
+  --gold-dim:#B98A2C;
+  --teal:#2BB8A3;
+  --rust:#E4572E;
+  --radius:14px;
+  --font-display:'Arial Black', 'Segoe UI Black', system-ui, sans-serif;
+  --font-body:-apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:ui-monospace, 'Courier New', monospace;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg-night);
+  color:var(--text);
+  font-family:var(--font-body);
+  -webkit-user-select:none;
+  user-select:none;
+}
+::selection{background:transparent;}
+img,video{-webkit-user-drag:none;}
+a,button{font-family:inherit;}
+
+/* ===== HEADER ===== */
+.site-header{
+  display:flex;align-items:center;gap:24px;
+  padding:18px 32px;
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;
+  background:rgba(14,17,22,0.96);
+  z-index:20;
+}
+.brand{display:flex;align-items:center;gap:8px;}
+.brand-mark{
+  font-family:var(--font-mono);font-size:13px;
+  background:var(--gold);color:#1a1200;
+  padding:4px 7px;border-radius:5px;font-weight:700;letter-spacing:0.5px;
+}
+.brand-name{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:0.5px;}
+.brand-name em{color:var(--gold);font-style:normal;}
+
+.search-wrap{flex:1;max-width:440px;position:relative;}
+#searchInput{
+  width:100%;background:var(--bg-panel);border:1px solid var(--line);
+  color:var(--text);padding:10px 16px 10px 36px;border-radius:999px;
+  font-size:14px;outline:none;
+}
+#searchInput:focus{border-color:var(--gold);}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-dim);}
+
+.header-right{margin-left:auto;}
+.reel-tick{
+  font-family:var(--font-mono);font-size:11px;color:var(--teal);
+  border:1px solid var(--teal);padding:5px 10px;border-radius:999px;
+}
+
+/* ===== CATEGORY STRIP ===== */
+.category-strip{display:flex;gap:10px;padding:14px 32px;overflow-x:auto;border-bottom:1px solid var(--line);}
+.category-strip::-webkit-scrollbar{display:none;}
+.cat-chip{
+  flex:none;font-size:13px;font-weight:600;padding:8px 16px;border-radius:999px;
+  border:1px solid var(--line);background:var(--bg-panel);color:var(--text-dim);
+  cursor:pointer;white-space:nowrap;
+}
+.cat-chip:hover{border-color:var(--gold);color:var(--text);}
+.cat-chip.active{background:var(--gold);border-color:var(--gold);color:#1a1200;}
+
+/* ===== HERO ===== */
+.hero{
+  position:relative;display:flex;align-items:center;padding:64px 32px;
+  overflow:hidden;border-bottom:1px solid var(--line);
+  background:radial-gradient(ellipse at top right, #1c2534 0%, var(--bg-night) 60%);
+}
+.hero-reel{
+  position:absolute;right:-60px;top:50%;transform:translateY(-50%) rotate(8deg);
+  display:flex;gap:14px;opacity:0.35;pointer-events:none;
+}
+.reel-frame{width:130px;height:190px;border-radius:6px;background:linear-gradient(160deg,var(--bg-panel-2),var(--bg-panel));border:1px solid var(--line);}
+.reel-frame:nth-child(2){transform:translateY(-24px) rotate(-4deg);}
+.reel-frame:nth-child(3){transform:translateY(18px) rotate(6deg);}
+
+.hero-copy{max-width:600px;position:relative;z-index:2;}
+.hero-eyebrow{font-family:var(--font-mono);color:var(--teal);font-size:13px;letter-spacing:1px;margin:0 0 10px;}
+.hero-title{font-family:var(--font-display);font-size:64px;font-weight:800;line-height:0.95;margin:0 0 20px;}
+.hero-sub{color:var(--text-dim);font-size:15px;line-height:1.6;margin:0 0 26px;}
+
+.btn-primary{
+  background:var(--gold);color:#1a1200;border:none;padding:14px 28px;
+  font-size:15px;font-weight:700;border-radius:999px;cursor:pointer;
+}
+.btn-primary:hover{box-shadow:0 8px 20px rgba(244,183,64,0.25);}
+.btn-block{width:100%;}
+.btn-ghost{
+  background:transparent;border:1px solid var(--line);color:var(--text-dim);
+  padding:10px 18px;border-radius:999px;cursor:pointer;font-size:13px;
+}
+.btn-ghost:hover{border-color:var(--rust);color:var(--rust);}
+
+/* ===== GRID ===== */
+.grid-section{padding:20px 32px 60px;}
+.row-block{margin-bottom:38px;}
+.row-head{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
+.row-title{font-family:var(--font-display);font-size:24px;font-weight:700;margin:0;}
+.row-count{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);}
+.row-track{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+
+.card{background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;cursor:pointer;}
+.card:hover{border-color:var(--gold-dim);}
+.card-thumb{height:120px;position:relative;display:flex;align-items:flex-end;padding:10px;color:#fff;font-weight:700;}
+.card-thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%);}
+.card-price{
+  position:absolute;top:8px;right:8px;background:rgba(14,17,22,0.75);
+  border:1px solid var(--gold);color:var(--gold);font-family:var(--font-mono);
+  font-size:11px;padding:3px 8px;border-radius:999px;z-index:2;
+}
+.card-title-on-thumb{position:relative;z-index:2;font-size:14px;}
+.card-body{padding:12px 14px 14px;}
+.card-cat{color:var(--text-dim);font-size:12px;margin:0;}
+.empty-state{text-align:center;color:var(--text-dim);padding:60px 0;}
+
+.site-footer{border-top:1px solid var(--line);padding:22px 32px;color:var(--text-dim);font-size:12px;text-align:center;}
+
+/* ===== OVERLAYS ===== */
+.overlay{position:fixed;inset:0;background:rgba(6,7,9,0.88);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;}
+
+.player-shell{width:min(900px, 100%);background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;position:relative;}
+.close-btn{position:absolute;top:12px;right:12px;z-index:5;background:rgba(0,0,0,0.5);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;}
+.video-frame{height:440px;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.preview-canvas{position:absolute;inset:0;background:repeating-linear-gradient(115deg, #1b2330 0 40px, #212a3a 40px 80px);}
+.preview-countdown{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;color:#fff;}
+.count-num{font-family:var(--font-display);font-size:72px;font-weight:800;}
+.count-label{font-family:var(--font-mono);font-size:12px;color:var(--gold);letter-spacing:1px;}
+.locked-badge{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);border:1px solid var(--rust);color:var(--rust);padding:8px 16px;border-radius:999px;font-size:13px;z-index:3;}
+.video-meta{padding:18px 20px;}
+.video-meta h2{margin:0 0 4px;font-family:var(--font-display);font-size:22px;}
+.tag{margin:0;color:var(--text-dim);font-size:13px;}
+
+.ticket{width:min(440px, 100%);background:var(--bg-panel);border-radius:18px;position:relative;box-shadow:0 30px 60px rgba(0,0,0,0.5);}
+.ticket-top{padding:26px 24px 20px;text-align:center;}
+.ticket-eyebrow{font-family:var(--font-mono);font-size:11px;color:var(--teal);letter-spacing:1.5px;text-transform:uppercase;margin:0 0 8px;}
+.ticket-top h3{margin:0 0 14px;font-family:var(--font-display);font-size:22px;}
+.ticket-amount{font-family:var(--font-display);font-size:40px;font-weight:800;color:var(--gold);}
+.ticket-amount span{font-size:44px;}
+.ticket-sub{color:var(--text-dim);font-size:12px;margin:10px 0 0;}
+.ticket-sub strong{color:var(--text);font-family:var(--font-mono);}
+
+.ticket-perf{height:0;border-top:2px dashed var(--line);position:relative;margin:0 0 4px;}
+.ticket-perf::before,.ticket-perf::after{content:"";position:absolute;top:-11px;width:22px;height:22px;border-radius:50%;background:var(--bg-night);}
+.ticket-perf::before{left:-32px;}
+.ticket-perf::after{right:-32px;}
+
+.ticket-bottom{padding:20px 24px 26px;display:flex;flex-direction:column;gap:6px;}
+.ticket-note{font-size:11px;color:var(--text-dim);line-height:1.5;margin:10px 0 0;}
+
+.azampay-pane{padding:18px 18px 22px;}
+.azampay-frame-wrap{position:relative;width:100%;height:480px;border-radius:12px;overflow:hidden;background:var(--bg-panel-2);border:1px solid var(--line);}
+.azampay-frame{width:100%;height:100%;border:none;background:#fff;}
+.azampay-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--text-dim);font-size:13px;text-align:center;padding:0 20px;}
+.azampay-pane .ticket-note{text-align:center;}
+.azampay-pane .ticket-note button{margin-top:10px;}
+#cancelPayBtn{margin:14px auto 0;display:block;}
+
+.spinner{width:36px;height:36px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--gold);animation:spin 0.9s linear infinite;margin:6px auto 14px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media (max-width:720px){
+  .site-header{flex-wrap:wrap;padding:14px 18px;}
+  .search-wrap{order:3;max-width:none;width:100%;}
+  .hero{padding:44px 18px;}
+  .hero-title{font-size:42px;}
+  .hero-reel{display:none;}
+  .grid-section{padding:16px 18px 40px;}
+  .video-frame{height:280px;}
+  .azampay-frame-wrap{height:380px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .spinner{animation:none;}
+  html{scroll-behavior:auto;}
+}
+button:focus-visible, input:focus-visible{outline:2px solid var(--teal);outline-offset:2px;}
+</style>
+</head>
+<body oncontextmenu="return false;">
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark">VH</span>
+      <span class="brand-name">VIDIO<em>HUB</em></span>
+    </div>
+    <div class="search-wrap">
+      <input id="searchInput" type="text" placeholder="Tafuta filamu, series, muziki..." autocomplete="off">
+      <span class="search-icon">⌕</span>
+    </div>
+    <div class="header-right"><span class="reel-tick">● showing now</span></div>
+  </header>
+
+  <nav class="category-strip" id="categoryStrip" aria-label="Categories"></nav>
+
+  <section class="hero">
+    <div class="hero-reel" aria-hidden="true">
+      <div class="reel-frame"></div><div class="reel-frame"></div><div class="reel-frame"></div>
+    </div>
+    <div class="hero-copy">
+      <p class="hero-eyebrow">Kizazi kipya cha burudani</p>
+      <h1 class="hero-title">One ticket.<br>Any screen.<br>No limits.</h1>
+      <p class="hero-sub">Chagua kipindi, tazama dakika 5 bure, kisha lipa TZS 1,000 kupitia AzamPay.</p>
+      <button class="btn-primary" id="heroCta">Anza kutazama</button>
+    </div>
+  </section>
+
+  <main>
+    <section class="grid-section" id="gridSection"></section>
+    <p class="empty-state" id="emptyState" hidden>Hakuna matokeo. Jaribu neno lingine la kutafuta.</p>
+  </main>
+
+  <footer class="site-footer">
+    <p>VidioHub &copy; 2026 &mdash; Malipo salama kupitia AzamPay. Video hazipatikani kwa kupakua.</p>
+  </footer>
+
+  <!-- VIDEO / PREVIEW MODAL -->
+  <div class="overlay" id="playerOverlay" hidden>
+    <div class="player-shell">
+      <button class="close-btn" id="closePlayer" aria-label="Funga">✕</button>
+      <div class="video-frame" id="videoFrame">
+        <div class="preview-canvas" id="previewCanvas"></div>
+        <div class="preview-countdown" id="previewCountdown">
+          <span class="count-num" id="countNum">5</span>
+          <span class="count-label">onyesho la bure</span>
+        </div>
+        <div class="locked-badge" id="lockedBadge" hidden>🔒 Umefungwa &mdash; lipa kuendelea</div>
+      </div>
+      <div class="video-meta">
+        <h2 id="playerTitle">Title</h2>
+        <p id="playerCategory" class="tag"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENT MODAL (cinema ticket + embedded AzamPay checkout) -->
+  <div class="overlay" id="payOverlay" hidden>
+    <div class="ticket" id="ticket">
+      <div class="ticket-top">
+        <p class="ticket-eyebrow">Tiketi ya VidioHub</p>
+        <h3 id="payTitleLabel">Unlock this video</h3>
+        <div class="ticket-amount">TZS <span>1,000</span></div>
+        <p class="ticket-sub">Malipo yanaenda kwenye namba: <strong>0622531766</strong></p>
+      </div>
+      <div class="ticket-perf" aria-hidden="true"></div>
+      <div class="ticket-bottom azampay-pane" id="azampayPane">
+        <div class="azampay-frame-wrap" id="azampayFrameWrap">
+          <div class="azampay-loading" id="azampayLoading">
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Inapakia ukurasa wa malipo&hellip;</p>
+          </div>
+          <iframe id="azampayFrame" class="azampay-frame" title="AzamPay checkout" allow="payment" hidden></iframe>
+        </div>
+        <p class="ticket-note" id="azampayFallbackNote" hidden>
+          Ukurasa wa malipo haukupakia hapa.
+          <button class="btn-ghost" id="openAzampaySameTab" type="button">Fungua ukurasa wa malipo</button>
+        </p>
+        <button class="btn-ghost" id="cancelPayBtn" type="button">Ghairi</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* =========================================================
+   VidioHub — single-file build.
+   Everything (markup, styles, logic) lives in this one HTML file on
+   purpose: fewer requests before the page is usable, no external font
+   fetch, and nothing to misconfigure across separate files. Swap the
+   CATALOG data below for your real titles when ready.
+   ========================================================= */
+
+const CATALOG = [
+  { id: "bm-001", title: "Mwanzo Mpya",           category: "Bongo Movie", color:"#3b2a1d", price: 1000 },
+  { id: "bm-002", title: "Kivuli cha Jana",       category: "Bongo Movie", color:"#2a1d3b", price: 1000 },
+  { id: "bm-003", title: "Dar Nights",            category: "Bongo Movie", color:"#1d3b2e", price: 1000 },
+  { id: "nm-001", title: "Lagos Chronicles",      category: "Nollywood",   color:"#3b1d24", price: 1000 },
+  { id: "nm-002", title: "The Inheritance",       category: "Nollywood",  color:"#1d2b3b", price: 1000 },
+  { id: "se-001", title: "Rent Wars S1",          category: "Series",     color:"#3b331d", price: 1000 },
+  { id: "se-002", title: "Boma Letu S2",          category: "Series",     color:"#24301d", price: 1000 },
+  { id: "sp-001", title: "Kariakoo Derby Highlights", category:"Sports",  color:"#1d3733", price: 1000 },
+  { id: "sp-002", title: "AFCON Best Goals",      category: "Sports",     color:"#331d2f", price: 1000 },
+  { id: "mu-001", title: "Bongo Fleva Mix Vol.9", category: "Music",      color:"#2f2416", price: 1000 },
+  { id: "mu-002", title: "Singeli Live Session",  category: "Music",      color:"#16232f", price: 1000 },
+  { id: "ki-001", title: "Simba the Explorer",    category: "Kids",       color:"#1e2f16", price: 1000 },
+];
+const CATEGORIES = ["All", ...Array.from(new Set(CATALOG.map(v => v.category)))];
+
+let activeCategory = "All";
+let searchTerm = "";
+let previewTimer = null;
+
+const catStrip = document.getElementById("categoryStrip");
+CATEGORIES.forEach(cat => {
+  const chip = document.createElement("button");
+  chip.className = "cat-chip" + (cat === "All" ? " active" : "");
+  chip.textContent = cat;
+  chip.addEventListener("click", () => {
+    activeCategory = cat;
+    document.querySelectorAll(".cat-chip").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    renderGrid();
+  });
+  catStrip.appendChild(chip);
+});
+
+function renderGrid() {
+  const grid = document.getElementById("gridSection");
+  const empty = document.getElementById("emptyState");
+  grid.innerHTML = "";
+  const filtered = CATALOG.filter(v => {
+    const matchesCat = activeCategory === "All" || v.category === activeCategory;
+    const matchesSearch = v.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           v.category.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCat && matchesSearch;
+  });
+  if (filtered.length === 0) { empty.hidden = false; return; }
+  empty.hidden = true;
+
+  const groups = {};
+  filtered.forEach(v => { (groups[v.category] ??= []).push(v); });
+
+  Object.entries(groups).forEach(([cat, items]) => {
+    const row = document.createElement("div");
+    row.className = "row-block";
+    row.innerHTML = `
+      <div class="row-head">
+        <h2 class="row-title">${cat}</h2>
+        <span class="row-count">${items.length} title${items.length > 1 ? "s" : ""}</span>
+      </div>
+      <div class="row-track"></div>`;
+    const track = row.querySelector(".row-track");
+    items.forEach(v => track.appendChild(buildCard(v)));
+    grid.appendChild(row);
+  });
+}
+
+function buildCard(v) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="card-thumb" style="background:linear-gradient(160deg, ${v.color}, #0E1116)">
+      <span class="card-price">TZS ${v.price.toLocaleString()}</span>
+      <span class="card-title-on-thumb">${v.title}</span>
+    </div>
+    <div class="card-body"><p class="card-cat">${v.category}</p></div>`;
+  card.addEventListener("click", () => openPlayer(v));
+  return card;
+}
+
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  searchTerm = e.target.value;
+  renderGrid();
+});
+
+const playerOverlay = document.getElementById("playerOverlay");
+const previewCountdown = document.getElementById("previewCountdown");
+const countNum = document.getElementById("countNum");
+const lockedBadge = document.getElementById("lockedBadge");
+
+function openPlayer(video) {
+  document.getElementById("playerTitle").textContent = video.title;
+  document.getElementById("playerCategory").textContent = video.category;
+  lockedBadge.hidden = true;
+  previewCountdown.style.display = "flex";
+  playerOverlay.hidden = false;
+
+  let secondsLeft = 5;
+  countNum.textContent = secondsLeft;
+  clearInterval(previewTimer);
+  previewTimer = setInterval(() => {
+    secondsLeft -= 1;
+    if (secondsLeft <= 0) {
+      clearInterval(previewTimer);
+      previewCountdown.style.display = "none";
+      lockedBadge.hidden = false;
+      openPayModal(video);
+      return;
+    }
+    countNum.textContent = secondsLeft;
+  }, 1000);
+}
+
+document.getElementById("closePlayer").addEventListener("click", () => {
+  clearInterval(previewTimer);
+  playerOverlay.hidden = true;
+});
+document.getElementById("heroCta").addEventListener("click", () => {
+  document.getElementById("gridSection").scrollIntoView({ behavior: "smooth" });
+});
+
+/* ---- PAYMENT: AzamPay hosted checkout, embedded in place ----
+   AzamPay handles the whole payment on their own page — network,
+   phone number, PIN. This site never touches any of that.
+   NOTE: the link below is a single static id, shared by every video —
+   fine for taking the TZS 1,000, but it means AzamPay's own confirmation
+   can't tell you *which* video a given payment was for on its own. See
+   the note in handleAzampayReturn() below for what to confirm with
+   AzamPay before relying on this for real unlocks. */
+const AZAMPAY_LINK = "https://payments.azampay.co.tz/?id=019f86a3-4143-7a56-8b1f-f913dbb9046c&language=en";
+
+const payOverlay = document.getElementById("payOverlay");
+const azampayFrame = document.getElementById("azampayFrame");
+const azampayLoading = document.getElementById("azampayLoading");
+const azampayFallbackNote = document.getElementById("azampayFallbackNote");
+let azampayLoadTimer = null;
+
+function openPayModal(video) {
+  document.getElementById("payTitleLabel").textContent = `Unlock: ${video.title}`;
+  payOverlay.hidden = false;
+  azampayFallbackNote.hidden = true;
+  azampayFrame.hidden = true;
+  azampayLoading.hidden = false;
+
+  sessionStorage.setItem("vh_pendingVideoId", video.id);
+  azampayFrame.src = AZAMPAY_LINK;
+
+  // Shortened from the earlier version — 2 seconds is enough to tell
+  // whether the page is embedding, and cuts the visible wait roughly in half.
+  clearTimeout(azampayLoadTimer);
+  azampayLoadTimer = setTimeout(() => {
+    azampayLoading.hidden = true;
+    azampayFallbackNote.hidden = false;
+  }, 2000);
+}
+
+azampayFrame.addEventListener("load", () => {
+  clearTimeout(azampayLoadTimer);
+  azampayLoading.hidden = true;
+  azampayFrame.hidden = false;
+});
+
+document.getElementById("openAzampaySameTab").addEventListener("click", () => {
+  window.location.href = AZAMPAY_LINK; // same tab, full page
+});
+
+document.getElementById("cancelPayBtn").addEventListener("click", () => {
+  clearTimeout(azampayLoadTimer);
+  azampayFrame.src = "about:blank";
+  payOverlay.hidden = true;
+  playerOverlay.hidden = true;
+});
+
+// AzamPay confirming via postMessage from inside the iframe (confirm this
+// against their docs — field name here is a placeholder).
+window.addEventListener("message", (event) => {
+  if (typeof event.data !== "object" || !event.data) return;
+  if (event.data.azampayStatus === "success") unlockVideo();
+});
+
+// AzamPay confirming via a full redirect back with a query string (set your
+// return URL in the AzamPay dashboard to point back at this page).
+function handleAzampayReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get("status");
+  const pendingVideoId = sessionStorage.getItem("vh_pendingVideoId");
+  if (!status || !pendingVideoId) return;
+
+  const video = CATALOG.find(v => v.id === pendingVideoId);
+  if (status === "success" && video) {
+    openPlayer(video);
+    clearInterval(previewTimer);
+    previewCountdown.style.display = "none";
+    unlockVideo();
+  }
+  window.history.replaceState({}, "", window.location.pathname);
+  sessionStorage.removeItem("vh_pendingVideoId");
+}
+
+function unlockVideo() {
+  payOverlay.hidden = true;
+  lockedBadge.hidden = true;
+  previewCountdown.style.display = "none";
+  const frame = document.getElementById("videoFrame");
+  const note = document.createElement("div");
+  note.style.cssText = "position:relative;z-index:2;color:#fff;text-align:center;";
+  note.innerHTML = `<div style="font-family:var(--font-display);font-size:26px;">Umefungua &mdash; inacheza sasa</div>`;
+  frame.appendChild(note);
+  // In production: request a short-lived playback URL for this video's id
+  // from your backend here, and attach it to a <video> element.
+}
+
+/* ---- Anti-download / anti-copy UX (deterrents, not real DRM) ---- */
+document.addEventListener("contextmenu", (e) => e.preventDefault());
+document.addEventListener("dragstart", (e) => e.preventDefault());
+document.addEventListener("keydown", (e) => {
+  const blocked = (e.ctrlKey && ["s", "u", "c"].includes(e.key.toLowerCase())) || e.key === "F12";
+  if (blocked) e.preventDefault();
+});
+
+renderGrid();
+handleAzampayReturn();
+</script>
+</body>
+</html>
